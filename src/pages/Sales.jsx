@@ -106,6 +106,7 @@ const Sales = ({ setCompletedSale }) => {
         : [...current, { ...product, size, qty: 1, key }];
     });
 
+    console.log(cart)
   const onQty = (key, amount) =>
     setCart((current) =>
       current
