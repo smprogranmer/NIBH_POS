@@ -8,6 +8,7 @@ import { IoEarthSharp } from "react-icons/io5";
 import { RiShoppingBag3Line } from "react-icons/ri";
 import { FiMapPin } from "react-icons/fi";
 import { FaPhoneAlt } from "react-icons/fa";
+import logo from "../assets/logo.svg";
 import { LuWallet } from "react-icons/lu";
 import { LuFileText } from "react-icons/lu";
 import { FiSmartphone } from "react-icons/fi";
@@ -21,12 +22,14 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const [discount, setDiscount] = useState("");
   const [delivery, setDelivery] = useState("0");
   const [method, setMethod] = useState("Cash");
-
-    const details = [
-    ["Invoice No", "#00012345", "Date", "10-09-2026"],
-    ["Customer", "Walk-in Customer", "Time", "02:35 PM"],
-    ["Phone", "01XXXXXXXXX", "", ""],
-  ];
+  const [details, setDetails] = useState([
+    {
+      invoiceNo: "INV-001",
+      customer: "John Doe",
+      date: "2023-09-08",
+      time: "10:30 AM",
+    },
+  ]);
 
   const grandTotal = Math.max(
     0,
@@ -75,7 +78,12 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
 
   const handlePreview = async () => {
     if (receiptRef.current) {
-      const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+      const canvas = await html2canvas(receiptRef.current, {
+        scale: 3,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+      });
+
       const imgData = canvas.toDataURL("image/png");
 
       // ব্রাউজারের নতুন ট্যাবে রসিদের প্রিভিউ ইমেজ দেখাবে
@@ -85,109 +93,98 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
       );
     }
   };
+
   return (
     <>
       {/* --- Hidden Receipt Component --- */}
-      <div className="absolute top-[-9999px] left-[-9999px]">
-        <div
-          ref={receiptRef}
-          className="w-[384px] p-4 bg-white text-black font-sans text-xs leading-tight"
-        >
-          {/* Header */}
-          <div className="px-7 pb-7 pt-8 sm:px-4  flex-col justify-center items-center border border-black  sm:pb-10 sm:pt-10">
+      <main className="min-h-screen overflow-x-auto bg-white px-3 py-6 text-black sm:py-10">
+        <div className="mx-auto flex w-fit flex-col items-center gap-4">
+          <article
+            ref={receiptRef}
+            className="thermal-receipt w-[576px] shrink-0 bg-white px-10 py-8 text-black"
+            aria-label="Thermal receipt"
+          >
             <header className="text-center">
-              <div className="mx-auto mb-1 flex h-16 w-24 items-end justify-center text-[#111]">
-                <svg
-                  viewBox="0 0 100 72"
-                  className="h-full w-full"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  aria-label="New Irani logo"
-                >
-                  <path d="M47 65c1-20 2-42 16-54 10-8 26-7 30 2 5 11-3 27-15 36" />
-                  <path d="M55 31c7 8 15 14 26 17M59 19c8 10 17 16 27 17M62 11c9 6 17 9 26 8M46 65c11-13 15-26 15-44" />
-                  <path d="M48 64c-9-11-18-20-31-20M28 43c-3-9-8-11-13-11M24 43c-2 8 3 13 10 11M20 49c-7 1-11-2-14-7" />
-                  <path
-                    d="M25 43c-2-6-1-11 3-14 4 4 4 9-3 14Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-              <h1 className="font-serif text-[30px] leading-none tracking-[-0.04em] sm:text-[35px]">
+            <div className="mx-auto mb-4 flex justify-center">
+              <img
+                src={logo}
+                alt="New Irani Borka House Logo"
+                className="h-[12rem] w-auto"
+              />
+            </div>
+              <h1 className="font-serif text-[34px] font-black leading-none tracking-[-0.04em]">
                 New Irani Borka House
               </h1>
-              <div className="mt-2 flex items-center justify-center gap-3 font-serif text-[16px] italic">
-                <span className="h-px w-10 bg-[#555]" />
+              <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[19px] font-bold italic">
+                <span className="h-0.5 w-12 bg-black mt-[1.5rem]" />
                 <span>Modesty is the real beauty</span>
-                <span className="h-px w-10 bg-[#555]" />
+                <span className="h-0.5 w-12 bg-black mt-[1.5rem]" />
               </div>
             </header>
-
             <section
-              className="mt-6 flex items-center justify-center gap-2 text-[11px] sm:gap-[0.7rem] sm:text-[12px]"
-              aria-label="Store values"
+              className="mt-8 flex items-center justify-center gap-4 text-[18px] font-bold"
+              aria-label="Store categories"
             >
-              {/* <FaRegHeart className="h-5 w-5 stroke-[1.4]" /> */}
+              {/* <Heart className="h-6 w-6 stroke-[2]" /> */}
               <span>Abaya</span>
               <b>•</b>
               <span>Borka</span>
               <b>•</b>
               <span>Hijab</span>
-              <span className="ml-1 flex items-center gap-1.5 border-l border-[#222] pl-4">
-                {/* <RiShoppingBag3Line className="h-5 w-5 stroke-[1.3]" /> */}
-                <span>•</span>
-                <span>Elegant</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span>•</span>
-                <span>Comfortable</span>
-              </span>
+              <span className="text-[2rem]">|</span>
+              <span>Elegant</span>
+              <span>•</span>
+              <span>Comfortable</span>
             </section>
-
-            <div className="mt-5 space-y-1 text-center text-[11px]">
+            <div className="mt-6 space-y-1 text-center text-[18px] font-bold">
               <p className="flex items-center justify-center gap-2">
-                <FiMapPin className="h-3.5 w-3.5" />
-                Fortun Shopping Mall, Malibag, Dhaka
+                {/* <MapPin className="h-5 w-5" /> */}
+                Fortune Shoping Mall, Malibag, Dhaka
               </p>
+              <p>www.newiraniborkahouse.com</p>
               <p className="flex items-center justify-center gap-2">
-                <IoEarthSharp />
-                www.newiraniborkahouse.com
-              </p>
-              <p className="flex items-center justify-center gap-2">
-                <FaPhoneAlt className="h-3.5 w-3.5" />
-                +880 1410857761
+                {/* <Phone className="h-5 w-5" /> */}
+                +880 17XX-XXXXXX
               </p>
             </div>
-
-            <div className="mt-3 border-y border-dashed border-[#777] py-2.5 text-[11px] leading-5">
+            <div className="mt-5 border-y-4 border-dashed border-black pt-3 pb-[2rem]  text-[18px] font-bold leading-7">
               {details.map((row, index) => (
-                <div className="grid grid-cols-[72px_1fr_35px_1fr]" key={index}>
-                  <span>{row[0]}</span>
-                  <span>: &nbsp;{row[1]}</span>
-                  <span>{row[2]}</span>
-                  <span>{row[3] && `:  ${row[3]}`}</span>
+                <div
+                  className="flex justify-between gap-3 text-[16px] font-bold"
+                  key={index}
+                >
+                  <div className="flex flex-col gap-1">
+                    <span>Invoice No : {row.invoiceNo}</span>
+                    <span>Customer : {row.customer}</span>{" "}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span>Date : {row.date}</span>
+                    <span>Time : {row.time} </span>{" "}
+                  </div>
                 </div>
               ))}
             </div>
 
-            <table className="mt-2 w-full border-b border-dashed border-[#777] pb-2 text-left text-[11px] leading-5">
+            <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[20px] font-bold leading-7">
               <thead>
-                <tr className="border-b border-[#777]">
-                  <th className="pb-1">No.</th>
-                  <th className="pb-1">Product Name</th>
-                  <th className="pb-1 text-center">Qty</th>
-                  <th className="pb-1 text-right">Price (৳)</th>
-                  <th className="pb-1 text-right">Total (৳)</th>
+                <tr className="border-b-2 border-black">
+                  <th className="pb-6">No.</th>
+                  <th className="pb-6">Product Name</th>
+                  <th className="pb-6 text-center">Qty</th>
+                  <th className="pb-6 text-right">Price </th>
+                  <th className="pb-6 text-right">Total </th>
                 </tr>
               </thead>
               <tbody>
                 {cart?.map((item, index) => (
-                  <tr className="align-top" key={index}>
+                  <tr
+                    className="align-top  border-b-4 border-dashed border-black"
+                    key={index}
+                  >
                     <td className="pt-2">{index + 1}</td>
                     <td className="pt-2">
                       {item.name}
-                      <div className="text-[10px]">
+                      <div className="text-[17px] mb-6">
                         Model: {item.model}&nbsp; | &nbsp;Size: {item.size}
                       </div>
                     </td>
@@ -195,11 +192,10 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                     <td className="pt-2 text-right">{item.price}</td>
                     <td className="pt-2 text-right">{item.qty * item.price}</td>
                   </tr>
-                ))}
+                ))}{" "}
               </tbody>
             </table>
-
-            <section className="ml-auto mt-2 w-[55%] border-b border-dashed border-[#777] pb-2 text-[12px] leading-5">
+            <section className="ml-auto mt-3 w-[55%] border-b-2 border-dashed border-black pb-3 text-[18px] font-bold leading-7">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>4,000</span>
@@ -208,14 +204,18 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 <span>Discount</span>
                 <span>0</span>
               </div>
-              <div className="mt-1 flex justify-between border-t border-dashed border-[#777] pt-1 text-[15px] font-bold">
+              <div className="flex justify-between mb-6">
+                <span>Delivery Charge</span>
+                <span>80</span>
+              </div>
+              <div className="mt-2 flex mb-6 justify-between border-t-4 border-dashed border-black pt-2 text-[30px] font-black">
                 <span>Total (৳)</span>
-                <span>4,080</span>
+                <span className="">4,080</span>
               </div>
             </section>
-
-            <section className="border-b border-dashed border-[#777] py-2 text-[11px] leading-5">
-              <div className="grid grid-cols-[100px_14px_1fr]">
+            <section className="border-b-4 border-dashed border-black pt-3  pb-6 text-[18px] font-bold leading-7">
+              <div className="grid grid-cols-[10rem_20px_10rem]">
+                {" "}
                 <span>Payment Method</span>
                 <span>:</span>
                 <span>Cash on Delivery</span>
@@ -227,27 +227,42 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 <span>0</span>
               </div>
             </section>
-
-            <footer className="pt-3 text-center">
-              <div className="flex items-center justify-center gap-2 font-serif text-[27px] italic">
+            <footer className="pt-4 text-center">
+              <div className="flex items-center justify-center gap-3 font-serif text-[34px] font-black italic">
                 <span>— ♡</span>
                 <span>Thank You</span>
                 <span>♡ —</span>
               </div>
-              <p className="mt-1 text-[11px]">For your trust and support</p>
-              <p className="text-[11px]">New Irani Borka House</p>
-
-              <div className="mt-5 flex items-center justify-center gap-3">
-                <span className="h-px w-16 bg-[#777]" />
-                <span className="text-[9px] tracking-[0.35em]">
+              <p className="mt-2 text-[18px] font-bold">
+                For your trust and support
+              </p>
+              <p className="text-[18px] font-bold">New Irani Borka House</p>
+              <div className="mt-5 flex items-center gap-5 text-left">
+                {/* <QrCode className="h-20 w-20 shrink-0" /> */}
+                <div className="h-20 w-0.5 bg-black" />
+                <div className="flex-1 text-[15px] font-bold leading-6">
+                  Visit us online
+                  <br />
+                  www.newiraniborkahouse.com
+                </div>
+                <div className="h-20 w-0.5 bg-black" />
+                <div className="flex gap-3">
+                  {/* <CircleUserRound className="h-6 w-6" /> */}
+                  {/* <Send className="h-6 w-6" /> */}
+                  {/* <ArrowUpRight className="h-6 w-6" /> */}
+                </div>
+              </div>
+              <div className="mt-7 flex items-center justify-center gap-4">
+                <span className="h-0.5 w-24 bg-black" />
+                <span className="text-[15px] font-bold tracking-[0.35em]">
                   GRACE IN EVERY STEP
                 </span>
-                <span className="h-px w-16 bg-[#777]" />
+                <span className="h-0.5 w-24 bg-black" />
               </div>
             </footer>
-          </div>
+          </article>
         </div>
-      </div>
+      </main>
 
       <Modal title="Complete quick sale" onClose={onClose} wide>
         <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
