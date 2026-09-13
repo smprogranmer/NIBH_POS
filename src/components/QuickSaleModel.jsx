@@ -16,6 +16,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const [invoiceData, setInvoiceData] = useState({
     phone: "",
     discount: "",
+    size: "52",
     method: "Cash",
     invoiceNo: "INV-001",
     customerType: "New",
@@ -58,50 +59,49 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const [loading, setLoading] = useState(false);
 
   // প্রিন্টিং হ্যান্ডলার (RawBT App Integration)
-const handlePrintAndSale = async () => {
-  setLoading(true);
+  const handlePrintAndSale = async () => {
+    setLoading(true);
 
-  try {
-    // ১. র্যান্ডম ইনভয়েস নম্বর তৈরি
-    const randomNumber = `NIBH-${Math.floor(Math.random() * 1000000)}`;
-
-    // ২. স্টেট আপডেট
-    setInvoiceData((prev) => ({
-      ...prev,
-      invoiceNo: randomNumber,
-    }));
-
-    // ৩. DOM-এ নতুন ইনভয়েস নম্বর রেন্ডার হওয়ার জন্য ১০০ms অপেক্ষা
-    await new Promise((resolve) =>    setTimeout(resolve, 100));
-
-    
-    if (receiptRef.current) {
-  // ১. html2canvas দিয়ে ছবি তৈরি করা
-  const canvas = await html2canvas(receiptRef.current, { scale: 2 });
-  const dataUrl = canvas.toDataURL("image/png");
-
-  // ২. ইউজার ক্লিক হ্যান্ডলার ঠিক রাখার জন্য Blob-এ কনভার্ট করা
-  const res = await fetch(dataUrl);
-  const blob = await res.blob();
-  const file = new File([blob], "receipt.png", { type: "image/png" });
-
-  // ৩. মোবাইল অ্যাপের জন্য নভেটিভ শেয়ার মেনু
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({
-        files: [file],
-        title: "Print Receipt",
-        text: "Receipt image for thermal printing",
-      });
-    } catch (err) {
-      // ইউজার শেয়ার ক্যানসেল করলে যেন কনসোলে এরর না দেখায়
-      if (err.name !== "AbortError") console.error("Share failed:", err);
-    }
-  } else {
-    // ৪. পিসি বা ডেস্কটপ ব্রাউজারের জন্য প্রিন্ট অপশন
-    const win = window.open("", "_blank");
-    if (win) {
-      win.document.write(`
+      // ১. র্যান্ডম ইনভয়েস নম্বর তৈরি
+      const randomNumber = `NIBH-${Math.floor(Math.random() * 1000000)}`;
+
+      // ২. স্টেট আপডেট
+      setInvoiceData((prev) => ({
+        ...prev,
+        invoiceNo: randomNumber,
+      }));
+
+      // ৩. DOM-এ নতুন ইনভয়েস নম্বর রেন্ডার হওয়ার জন্য ১০০ms অপেক্ষা
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      if (receiptRef.current) {
+        // ১. html2canvas দিয়ে ছবি তৈরি করা
+        const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+        const dataUrl = canvas.toDataURL("image/png");
+
+        // ২. ইউজার ক্লিক হ্যান্ডলার ঠিক রাখার জন্য Blob-এ কনভার্ট করা
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], "receipt.png", { type: "image/png" });
+
+        // ৩. মোবাইল অ্যাপের জন্য নভেটিভ শেয়ার মেনু
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: "Print Receipt",
+              text: "Receipt image for thermal printing",
+            });
+          } catch (err) {
+            // ইউজার শেয়ার ক্যানসেল করলে যেন কনসোলে এরর না দেখায়
+            if (err.name !== "AbortError") console.error("Share failed:", err);
+          }
+        } else {
+          // ৪. পিসি বা ডেস্কটপ ব্রাউজারের জন্য প্রিন্ট অপশন
+          const win = window.open("", "_blank");
+          if (win) {
+            win.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -123,16 +123,16 @@ const handlePrintAndSale = async () => {
           </body>
         </html>
       `);
-      win.document.close();
+            win.document.close();
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Print Error:", error);
+      alert("প্রিন্ট করতে সমস্যা হয়েছে!");
+      setLoading(false);
     }
-  }
-}
-  } catch (error) {
-    console.error("Print Error:", error);
-    alert("প্রিন্ট করতে সমস্যা হয়েছে!");
-    setLoading(false);
-  }
-};
+  };
 
   const handlePreview = async () => {
     // 1. Generate new invoice number first
@@ -171,18 +171,18 @@ const handlePrintAndSale = async () => {
         <div className="mx-auto flex w-fit flex-col items-center gap-4">
           <article
             ref={receiptRef}
-            className="thermal-receipt w-[576px] shrink-0 bg-white px-10 py-8 text-black"
+            className="thermal-receipt w-[576px] shrink-0 bg-white px-[1.8rem] pb-8 text-black"
             aria-label="Thermal receipt"
           >
-            <header className="text-center">
-              <div className="mx-auto flex justify-center">
+            <header className="text-center mt-[-3rem]">
+              <div className="mx-auto flex justify-center mb-[-4rem]">
                 <img
                   src={logo}
                   alt="New Irani Borka House Logo"
                   className="h-[30rem] w-auto"
                 />
               </div>
-              <h1 className="font-black text-[45px] font-black leading-none tracking-[-0.04em]">
+              <h1 className=" text-[45px] font-black leading-none tracking-[-0.04em]">
                 New Irani Borka House
               </h1>
               <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[20px] font-bold italic">
@@ -230,7 +230,7 @@ const handlePrintAndSale = async () => {
               </div>
             </div>
 
-            <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[22px] font-bold leading-7">
+            <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[22px] font-extrabold leading-7">
               <thead>
                 <tr className="border-b-2 border-black">
                   <th className="pb-6">No.</th>
@@ -250,12 +250,14 @@ const handlePrintAndSale = async () => {
                     <td className="pt-2">
                       {item.name}
                       <div className="text-[19px] mb-6">
-                        Model: {item.model}&nbsp; | &nbsp;Size: {item.size}
+                        Model: {item.model}&nbsp; | &nbsp;Size: {invoiceData.size}
                       </div>
                     </td>
                     <td className="pt-2 text-center">{item.qty || 1}</td>
                     <td className="pt-2 text-right">{item.price}</td>
-                    <td className="pt-2 text-right text-[22px] font-extrabold">{item.qty * item.price}</td>
+                    <td className="pt-2 text-right text-[22px] font-extrabold">
+                      {item.qty * item.price}
+                    </td>
                   </tr>
                 ))}{" "}
               </tbody>
@@ -302,9 +304,8 @@ const handlePrintAndSale = async () => {
                 {/* <QrCode className="h-20 w-20 shrink-0" /> */}
                 <div className="h-20 w-0.5 bg-black" />
                 <div className="text-center flex-1 text-[25px] font-bold leading-6">
-                  **৭ দিনের মধ্যে শুধুমাত্র ১ বার এক্সচেঞ্জ করা যাবে।
-বিক্রিত পণ্য ফেরতযোগ্য নয়।
-মেমো ছাড়া এক্সচেঞ্জ প্রযোজ্য নয়।**
+                  **৭ দিনের মধ্যে শুধুমাত্র ১ বার এক্সচেঞ্জ করা যাবে। বিক্রিত
+                  পণ্য ফেরতযোগ্য নয়। মেমো ছাড়া এক্সচেঞ্জ প্রযোজ্য নয়।**
                 </div>
                 <div className="h-20 w-0.5 bg-black" />
                 <div className="flex gap-3">
@@ -390,6 +391,20 @@ const handlePrintAndSale = async () => {
                   <option value="regular">New</option>
                   <option value="regular">Regular</option>
                   <option value="vip">VIP</option>
+                </select>
+              </label>
+              {/* Select Size  */}
+              <label className="text-xs font-bold text-slate-500">
+                Select Size
+                <select
+                  value={invoiceData.size}
+                  onChange={handleChange}
+                  name="size"
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-pink-400"
+                >
+                  <option value="52">52</option>
+                  <option value="54">54</option>
+                  <option value="56">56</option>
                 </select>
               </label>
             </div>
