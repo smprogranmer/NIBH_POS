@@ -72,28 +72,61 @@ const handlePrintAndSale = async () => {
     }));
 
     // ৩. DOM-এ নতুন ইনভয়েস নম্বর রেন্ডার হওয়ার জন্য ১০০ms অপেক্ষা
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) =>    setTimeout(resolve, 100));
 
-    // ৪. ক্যানভাস জেনারেট করা
+    
     if (receiptRef.current) {
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 3,
-        backgroundColor: "#ffffff",
-        useCORS: true,
+  // ১. html2canvas দিয়ে ছবি তৈরি করা
+  const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+  const dataUrl = canvas.toDataURL("image/png");
+
+  // ২. ইউজার ক্লিক হ্যান্ডলার ঠিক রাখার জন্য Blob-এ কনভার্ট করা
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const file = new File([blob], "receipt.png", { type: "image/png" });
+
+  // ৩. মোবাইল অ্যাপের জন্য নভেটিভ শেয়ার মেনু
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: "Print Receipt",
+        text: "Receipt image for thermal printing",
       });
-
-      // Base64 ডাটা নেওয়া
-      const base64Image = canvas
-        .toDataURL("image/png")
-        .replace(/^data:image\/(png|jpg);base64,/, "");
-
-      // RawBT অ্যাপে রিডাইরেক্ট করার আগেই Loading বন্ধ করুন
-      setLoading(false);
-
-      // RawBT অ্যাপের ইনটেনশনে পাঠানো
-      const rawbtIntent = `intent:base64,${base64Image}#Intent;scheme=rawbt;package=ru.a404m.rawbtprinter;end;`;
-      window.location.href = rawbtIntent;
+    } catch (err) {
+      // ইউজার শেয়ার ক্যানসেল করলে যেন কনসোলে এরর না দেখায়
+      if (err.name !== "AbortError") console.error("Share failed:", err);
     }
+  } else {
+    // ৪. পিসি বা ডেস্কটপ ব্রাউজারের জন্য প্রিন্ট অপশন
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Print Receipt</title>
+            <style>
+              body { margin: 0; display: flex; justify-content: center; }
+              img { max-width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <img id="receipt-img" src="${dataUrl}" />
+            <script>
+              const img = document.getElementById('receipt-img');
+              img.onload = () => {
+                window.print();
+                window.close();
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+  }
+}
   } catch (error) {
     console.error("Print Error:", error);
     alert("প্রিন্ট করতে সমস্যা হয়েছে!");
