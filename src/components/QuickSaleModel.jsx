@@ -222,7 +222,7 @@ const handlePrintAndSale = async () => {
                     </td>
                     <td className="pt-2 text-center">{item.qty || 1}</td>
                     <td className="pt-2 text-right">{item.price}</td>
-                    <td className="pt-2 text-right">{item.qty * item.price}</td>
+                    <td className="pt-2 text-right text-[22px] font-extrabold">{item.qty * item.price}</td>
                   </tr>
                 ))}{" "}
               </tbody>
@@ -230,15 +230,15 @@ const handlePrintAndSale = async () => {
             <section className="ml-auto mt-3 w-[55%] border-b-4 border-dashed border-black pb-3 text-[22px] font-bold leading-7">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{money(totals.subtotal)}</span>
+                <span className="font-extrabold">{money(totals.subtotal)}</span>
               </div>
               <div className="flex mb-4 justify-between">
                 <span>Discount</span>
-                <span>{money(discountAmount)}</span>
+                <span className="font-extrabold">{money(discountAmount)}</span>
               </div>
               <div className="mt-2 flex mb-6 justify-between border-t-4 border-dashed border-black pt-2 text-[30px] font-black">
                 <span>Total (৳)</span>
-                <span className="">{money(grandTotal)}</span>
+                <span>{money(grandTotal)}</span>
               </div>
             </section>
             <section className="border-b-4 border-dashed border-black pt-3  pb-6 text-[22px] font-bold leading-7">
@@ -256,7 +256,7 @@ const handlePrintAndSale = async () => {
               </div>
             </section>
             <footer className="pt-4 text-center">
-              <div className="flex items-center justify-center gap-3 font-serif text-[34px] font-black italic">
+              <div className="flex items-center justify-center gap-3 font-serif text-[38px] font-black italic">
                 <span>— ♡</span>
                 <span>Thank You</span>
                 <span>♡ —</span>
@@ -397,7 +397,7 @@ const handlePrintAndSale = async () => {
               </div>
             </div>
             <button
-              onClick={handlePrintAndSale}
+              onClick={handlePreview}
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-pink-600 py-3.5 text-sm font-bold text-white hover:bg-pink-700"
             >
               <FaCheck size={17} /> Complete Sale
