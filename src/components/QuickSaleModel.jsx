@@ -72,28 +72,61 @@ const handlePrintAndSale = async () => {
     }));
 
     // ৩. DOM-এ নতুন ইনভয়েস নম্বর রেন্ডার হওয়ার জন্য ১০০ms অপেক্ষা
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) =>    setTimeout(resolve, 100));
 
-    // ৪. ক্যানভাস জেনারেট করা
+    
     if (receiptRef.current) {
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 3,
-        backgroundColor: "#ffffff",
-        useCORS: true,
+  // ১. html2canvas দিয়ে ছবি তৈরি করা
+  const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+  const dataUrl = canvas.toDataURL("image/png");
+
+  // ২. ইউজার ক্লিক হ্যান্ডলার ঠিক রাখার জন্য Blob-এ কনভার্ট করা
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const file = new File([blob], "receipt.png", { type: "image/png" });
+
+  // ৩. মোবাইল অ্যাপের জন্য নভেটিভ শেয়ার মেনু
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: "Print Receipt",
+        text: "Receipt image for thermal printing",
       });
-
-      // Base64 ডাটা নেওয়া
-      const base64Image = canvas
-        .toDataURL("image/png")
-        .replace(/^data:image\/(png|jpg);base64,/, "");
-
-      // RawBT অ্যাপে রিডাইরেক্ট করার আগেই Loading বন্ধ করুন
-      setLoading(false);
-
-      // RawBT অ্যাপের ইনটেনশনে পাঠানো
-      const rawbtIntent = `intent:base64,${base64Image}#Intent;scheme=rawbt;package=ru.a404m.rawbtprinter;end;`;
-      window.location.href = rawbtIntent;
+    } catch (err) {
+      // ইউজার শেয়ার ক্যানসেল করলে যেন কনসোলে এরর না দেখায়
+      if (err.name !== "AbortError") console.error("Share failed:", err);
     }
+  } else {
+    // ৪. পিসি বা ডেস্কটপ ব্রাউজারের জন্য প্রিন্ট অপশন
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Print Receipt</title>
+            <style>
+              body { margin: 0; display: flex; justify-content: center; }
+              img { max-width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <img id="receipt-img" src="${dataUrl}" />
+            <script>
+              const img = document.getElementById('receipt-img');
+              img.onload = () => {
+                window.print();
+                window.close();
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+  }
+}
   } catch (error) {
     console.error("Print Error:", error);
     alert("প্রিন্ট করতে সমস্যা হয়েছে!");
@@ -146,13 +179,13 @@ const handlePrintAndSale = async () => {
                 <img
                   src={logo}
                   alt="New Irani Borka House Logo"
-                  className="h-[20rem] w-auto"
+                  className="h-[30rem] w-auto"
                 />
               </div>
-              <h1 className="font-serif text-[45px] font-black leading-none tracking-[-0.04em]">
+              <h1 className="font-black text-[45px] font-black leading-none tracking-[-0.04em]">
                 New Irani Borka House
               </h1>
-              <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[19px] font-bold italic">
+              <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[20px] font-bold italic">
                 <span className="h-0.5 w-12 bg-black mt-[1.5rem]" />
                 <span>Modesty is the real beauty</span>
                 <span className="h-0.5 w-12 bg-black mt-[1.5rem]" />
@@ -173,7 +206,7 @@ const handlePrintAndSale = async () => {
               <span>•</span>
               <span>Comfortable</span>
             </section>
-            <div className="mt-2 space-y-1 text-center text-[20px] font-bold">
+            <div className="mt-2 space-y-1 text-center text-[22px] font-bold">
               <p className="flex items-center justify-center gap-2">
                 {/* <MapPin className="h-5 w-5" /> */}
                 Fortune Shoping Mall, Malibag, Dhaka
@@ -185,7 +218,7 @@ const handlePrintAndSale = async () => {
               </p>
             </div>
             <div className="mt-5 border-y-4 border-dashed border-black pt-3 pb-[2rem]  text-[20px] font-bold leading-7">
-              <div className="flex justify-between gap-3 text-[20px] font-bold">
+              <div className="flex justify-between gap-3 text-[22px] font-bold">
                 <div className="flex flex-col gap-1">
                   <span>Invoice No : {invoiceData.invoiceNo}</span>
                   <span>Customer : {invoiceData.customerType}</span>{" "}
@@ -197,7 +230,7 @@ const handlePrintAndSale = async () => {
               </div>
             </div>
 
-            <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[20px] font-bold leading-7">
+            <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[22px] font-bold leading-7">
               <thead>
                 <tr className="border-b-2 border-black">
                   <th className="pb-6">No.</th>
@@ -261,17 +294,17 @@ const handlePrintAndSale = async () => {
                 <span>Thank You</span>
                 <span>♡ —</span>
               </div>
-              <p className="mt-2 text-[18px] font-bold">
+              <p className="mt-2 text-[20px] font-bold">
                 For your trust and support
               </p>
               <p className="text-[18px] font-bold">New Irani Borka House</p>
               <div className="mt-5 flex items-center gap-5 text-left">
                 {/* <QrCode className="h-20 w-20 shrink-0" /> */}
                 <div className="h-20 w-0.5 bg-black" />
-                <div className="flex-1 text-[15px] font-bold leading-6">
-                  Visit us online
-                  <br />
-                  www.newiraniborkahouse.com
+                <div className="text-center flex-1 text-[25px] font-bold leading-6">
+                  **৭ দিনের মধ্যে শুধুমাত্র ১ বার এক্সচেঞ্জ করা যাবে।
+বিক্রিত পণ্য ফেরতযোগ্য নয়।
+মেমো ছাড়া এক্সচেঞ্জ প্রযোজ্য নয়।**
                 </div>
                 <div className="h-20 w-0.5 bg-black" />
                 <div className="flex gap-3">
