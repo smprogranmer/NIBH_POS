@@ -15,12 +15,7 @@ const Dashboard = ({ cart }) => {
     },
   ]);
 
-  // const details ={
-  //   invoiceNo: "INV-001",
-  //   customer: "John Doe",
-  //   date: "2023-09-08",
-  //   time: "10:30 AM",
-  // }
+
   return (
     <main className="min-h-screen overflow-x-auto bg-white px-3 py-6 text-black sm:py-10">
       <div className="mx-auto flex w-fit flex-col items-center gap-4">
@@ -30,14 +25,14 @@ const Dashboard = ({ cart }) => {
           aria-label="Thermal receipt"
         >
           <header className="text-center">
-            <div className="mx-auto mb-4 flex justify-center">
+            <div className="mx-auto  flex justify-center">
               <img
                 src={logo}
                 alt="New Irani Borka House Logo"
-                className="h-[12rem] w-auto"
+                className="h-[20rem] w-auto"
               />
             </div>
-            <h1 className="font-serif text-[34px] font-black leading-none tracking-[-0.04em]">
+            <h1 className="font-serif text-[50px] font-black leading-none tracking-[-0.04em]">
               New Irani Borka House
             </h1>
             <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[19px] font-bold italic">
@@ -47,7 +42,7 @@ const Dashboard = ({ cart }) => {
             </div>
           </header>
           <section
-            className="mt-8 flex items-center justify-center gap-4 text-[18px] font-bold"
+            className="h-[5rem] flex items-center justify-center gap-4 text-[18px] font-bold"
             aria-label="Store categories"
           >
             {/* <Heart className="h-6 w-6 stroke-[2]" /> */}
@@ -56,12 +51,12 @@ const Dashboard = ({ cart }) => {
             <span>Borka</span>
             <b>•</b>
             <span>Hijab</span>
-            <span className="text-[2rem]">|</span>
+            <span className="text-[2rem] mb-[1rem] ">|</span>
             <span>Elegant</span>
             <span>•</span>
             <span>Comfortable</span>
           </section>
-          <div className="mt-6 space-y-1 text-center text-[18px] font-bold">
+          <div className="mt-2 space-y-1 text-center text-[18px] font-bold">
             <p className="flex items-center justify-center gap-2">
               {/* <MapPin className="h-5 w-5" /> */}
               Fortune Shoping Mall, Malibag, Dhaka

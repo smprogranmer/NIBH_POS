@@ -3,11 +3,6 @@ import html2canvas from "html2canvas";
 // import ReceiptPrinterEncoder from "receipt-printer-encoder";
 import { useRef } from "react";
 import { FaCheck } from "react-icons/fa6";
-import { FaRegHeart } from "react-icons/fa";
-import { IoEarthSharp } from "react-icons/io5";
-import { RiShoppingBag3Line } from "react-icons/ri";
-import { FiMapPin } from "react-icons/fi";
-import { FaPhoneAlt } from "react-icons/fa";
 import logo from "../assets/logo.svg";
 import { LuWallet } from "react-icons/lu";
 import { LuFileText } from "react-icons/lu";
@@ -17,25 +12,34 @@ import Modal from "./Modal";
 
 const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const money = (value) => `৳${Number(value).toLocaleString("en-BD")}`;
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [delivery, setDelivery] = useState("0");
-  const [method, setMethod] = useState("Cash");
-  const [details, setDetails] = useState([
-    {
-      invoiceNo: "INV-001",
-      customer: "John Doe",
-      date: "2023-09-08",
-      time: "10:30 AM",
-    },
-  ]);
+
+  const [invoiceData, setInvoiceData] = useState({
+    phone: "",
+    discount: "",
+    method: "Cash",
+    invoiceNo: "INV-001",
+    customerType: "New",
+    date: new Date().toISOString().split("T")[0].split("-").reverse().join("-"),
+    time: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  });
+
+  // 2. Generic function to update any form field dynamically
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInvoiceData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const grandTotal = Math.max(
     0,
     totals.subtotal -
-      (totals.subtotal * Number(discount || 0)) / 100 +
-      Number(delivery || 0),
+      (totals.subtotal * Number(invoiceData.discount || 0)) / 100 +
+      Number(invoiceData.delivery || 0),
   );
   // ✅ CORRECT
   const methods = [
@@ -45,38 +49,72 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
     ["Other", LuFileText],
   ];
 
+  const discountAmount =
+    (totals.subtotal * (Number(invoiceData.discount) || 0)) / 100;
+  console.log("Discount Amount:", discountAmount);
   // recipt
 
   const receiptRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   // প্রিন্টিং হ্যান্ডলার (RawBT App Integration)
-  const handlePrintAndSale = async () => {
-    setLoading(true);
+const handlePrintAndSale = async () => {
+  setLoading(true);
 
-    try {
-      // ২. মেমো ইমেজে রূপান্তর করে RawBT অ্যাপে পাঠানো
-      if (receiptRef.current) {
-        const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+  try {
+    // ১. র্যান্ডম ইনভয়েস নম্বর তৈরি
+    const randomNumber = `NIBH-${Math.floor(Math.random() * 1000000)}`;
 
-        // Base64 ইমেজ ডাটা নেওয়া
-        const base64Image = canvas
-          .toDataURL("image/png")
-          .replace(/^data:image\/(png|jpg);base64,/, "");
+    // ২. স্টেট আপডেট
+    setInvoiceData((prev) => ({
+      ...prev,
+      invoiceNo: randomNumber,
+    }));
 
-        // ৩. সরাসরি RawBT অ্যাপে ডাটা রিডাইরেক্ট করা
-        const rawbtIntent = `intent:base64,${base64Image}#Intent;scheme=rawbt;package=ru.a404m.rawbtprinter;end;`;
-        window.location.href = rawbtIntent;
-      }
-    } catch (error) {
-      console.error("Print Error:", error);
-      alert("প্রিন্ট করতে সমস্যা হয়েছে!");
-    } finally {
+    // ৩. DOM-এ নতুন ইনভয়েস নম্বর রেন্ডার হওয়ার জন্য ১০০ms অপেক্ষা
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // ৪. ক্যানভাস জেনারেট করা
+    if (receiptRef.current) {
+      const canvas = await html2canvas(receiptRef.current, {
+        scale: 3,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+      });
+
+      // Base64 ডাটা নেওয়া
+      const base64Image = canvas
+        .toDataURL("image/png")
+        .replace(/^data:image\/(png|jpg);base64,/, "");
+
+      // RawBT অ্যাপে রিডাইরেক্ট করার আগেই Loading বন্ধ করুন
       setLoading(false);
+
+      // RawBT অ্যাপের ইনটেনশনে পাঠানো
+      const rawbtIntent = `intent:base64,${base64Image}#Intent;scheme=rawbt;package=ru.a404m.rawbtprinter;end;`;
+      window.location.href = rawbtIntent;
     }
-  };
+  } catch (error) {
+    console.error("Print Error:", error);
+    alert("প্রিন্ট করতে সমস্যা হয়েছে!");
+    setLoading(false);
+  }
+};
 
   const handlePreview = async () => {
+    // 1. Generate new invoice number first
+    const randomNumber = `NIBH-${Math.floor(Math.random() * 1000000)}`;
+
+    // 2. Update state
+    setInvoiceData((prev) => ({
+      ...prev,
+      invoiceNo: randomNumber,
+    }));
+
+    // 3. Wait a micro-tick for React to render the new state into the DOM
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    // 4. Capture the updated element
     if (receiptRef.current) {
       const canvas = await html2canvas(receiptRef.current, {
         scale: 3,
@@ -86,7 +124,6 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
 
       const imgData = canvas.toDataURL("image/png");
 
-      // ব্রাউজারের নতুন ট্যাবে রসিদের প্রিভিউ ইমেজ দেখাবে
       const win = window.open("");
       win.document.write(
         `<img src="${imgData}" style="border:1px solid #000;" />`,
@@ -105,14 +142,14 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
             aria-label="Thermal receipt"
           >
             <header className="text-center">
-            <div className="mx-auto mb-4 flex justify-center">
-              <img
-                src={logo}
-                alt="New Irani Borka House Logo"
-                className="h-[12rem] w-auto"
-              />
-            </div>
-              <h1 className="font-serif text-[34px] font-black leading-none tracking-[-0.04em]">
+              <div className="mx-auto flex justify-center">
+                <img
+                  src={logo}
+                  alt="New Irani Borka House Logo"
+                  className="h-[20rem] w-auto"
+                />
+              </div>
+              <h1 className="font-serif text-[45px] font-black leading-none tracking-[-0.04em]">
                 New Irani Borka House
               </h1>
               <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[19px] font-bold italic">
@@ -122,7 +159,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               </div>
             </header>
             <section
-              className="mt-8 flex items-center justify-center gap-4 text-[18px] font-bold"
+              className="h-[5rem]  flex items-center justify-center gap-4 text-[20px] font-bold"
               aria-label="Store categories"
             >
               {/* <Heart className="h-6 w-6 stroke-[2]" /> */}
@@ -131,12 +168,12 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               <span>Borka</span>
               <b>•</b>
               <span>Hijab</span>
-              <span className="text-[2rem]">|</span>
+              <span className="text-[2rem] mb-[1rem] ">|</span>
               <span>Elegant</span>
               <span>•</span>
               <span>Comfortable</span>
             </section>
-            <div className="mt-6 space-y-1 text-center text-[18px] font-bold">
+            <div className="mt-2 space-y-1 text-center text-[20px] font-bold">
               <p className="flex items-center justify-center gap-2">
                 {/* <MapPin className="h-5 w-5" /> */}
                 Fortune Shoping Mall, Malibag, Dhaka
@@ -144,25 +181,20 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               <p>www.newiraniborkahouse.com</p>
               <p className="flex items-center justify-center gap-2">
                 {/* <Phone className="h-5 w-5" /> */}
-                +880 17XX-XXXXXX
+                +880 1410-857761
               </p>
             </div>
-            <div className="mt-5 border-y-4 border-dashed border-black pt-3 pb-[2rem]  text-[18px] font-bold leading-7">
-              {details.map((row, index) => (
-                <div
-                  className="flex justify-between gap-3 text-[16px] font-bold"
-                  key={index}
-                >
-                  <div className="flex flex-col gap-1">
-                    <span>Invoice No : {row.invoiceNo}</span>
-                    <span>Customer : {row.customer}</span>{" "}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span>Date : {row.date}</span>
-                    <span>Time : {row.time} </span>{" "}
-                  </div>
+            <div className="mt-5 border-y-4 border-dashed border-black pt-3 pb-[2rem]  text-[20px] font-bold leading-7">
+              <div className="flex justify-between gap-3 text-[20px] font-bold">
+                <div className="flex flex-col gap-1">
+                  <span>Invoice No : {invoiceData.invoiceNo}</span>
+                  <span>Customer : {invoiceData.customerType}</span>{" "}
                 </div>
-              ))}
+                <div className="flex flex-col gap-1">
+                  <span>Date : {invoiceData.date}</span>
+                  <span>Time : {invoiceData.time} </span>{" "}
+                </div>
+              </div>
             </div>
 
             <table className="mt-3 w-full border-b-6 border-dashed border-black pb-3 text-left text-[20px] font-bold leading-7">
@@ -184,7 +216,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                     <td className="pt-2">{index + 1}</td>
                     <td className="pt-2">
                       {item.name}
-                      <div className="text-[17px] mb-6">
+                      <div className="text-[19px] mb-6">
                         Model: {item.model}&nbsp; | &nbsp;Size: {item.size}
                       </div>
                     </td>
@@ -195,33 +227,29 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 ))}{" "}
               </tbody>
             </table>
-            <section className="ml-auto mt-3 w-[55%] border-b-2 border-dashed border-black pb-3 text-[18px] font-bold leading-7">
+            <section className="ml-auto mt-3 w-[55%] border-b-4 border-dashed border-black pb-3 text-[22px] font-bold leading-7">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>4,000</span>
+                <span>{money(totals.subtotal)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex mb-4 justify-between">
                 <span>Discount</span>
-                <span>0</span>
-              </div>
-              <div className="flex justify-between mb-6">
-                <span>Delivery Charge</span>
-                <span>80</span>
+                <span>{money(discountAmount)}</span>
               </div>
               <div className="mt-2 flex mb-6 justify-between border-t-4 border-dashed border-black pt-2 text-[30px] font-black">
                 <span>Total (৳)</span>
-                <span className="">4,080</span>
+                <span className="">{money(grandTotal)}</span>
               </div>
             </section>
-            <section className="border-b-4 border-dashed border-black pt-3  pb-6 text-[18px] font-bold leading-7">
-              <div className="grid grid-cols-[10rem_20px_10rem]">
+            <section className="border-b-4 border-dashed border-black pt-3  pb-6 text-[22px] font-bold leading-7">
+              <div className="grid grid-cols-[13rem_20px_10rem]">
                 {" "}
                 <span>Payment Method</span>
                 <span>:</span>
-                <span>Cash on Delivery</span>
+                <span>{invoiceData.method}</span>
                 <span>Received</span>
                 <span>:</span>
-                <span>4,080</span>
+                <span>{money(grandTotal)}</span>
                 <span>Change</span>
                 <span>:</span>
                 <span>0</span>
@@ -274,9 +302,10 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   type="number"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder="Customer mobile number"
+                  value={invoiceData.phone}
+                  onChange={handleChange}
+                  name="phone"
+                  placeholder="Customer Mobile Number"
                   className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-pink-400"
                 />
               </div>
@@ -289,8 +318,12 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 {methods.map(([label, Icon]) => (
                   <button
                     key={label}
-                    onClick={() => setMethod(label)}
-                    className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-[11px] font-bold ${method === label ? "border-pink-500 bg-pink-50 text-pink-700" : "border-slate-200 text-slate-500 hover:bg-slate-50"}`}
+                    onClick={() =>
+                      handleChange({
+                        target: { name: "method", value: label },
+                      })
+                    }
+                    className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-[11px] font-bold ${invoiceData.method === label ? "border-pink-500 bg-pink-50 text-pink-700" : "border-slate-200 text-slate-500 hover:bg-slate-50"}`}
                   >
                     <Icon size={18} />
                     {label}
@@ -302,23 +335,29 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               <label className="text-xs font-bold text-slate-500">
                 Discount
                 <input
-                  value={discount}
-                  onChange={(event) => setDiscount(event.target.value)}
+                  value={invoiceData.discount}
+                  onChange={handleChange}
+                  name="discount"
                   type="number"
                   min="0"
                   placeholder="৳0"
                   className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-pink-400"
                 />
               </label>
+              {/* Customer Type  */}
               <label className="text-xs font-bold text-slate-500">
-                Delivery charge
-                <input
-                  value={delivery}
-                  onChange={(event) => setDelivery(event.target.value)}
-                  type="number"
-                  min="0"
+                Customer Type
+                <select
+                  value={invoiceData.customerType}
+                  defaultValue="New"
+                  onChange={handleChange}
+                  name="customerType"
                   className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-pink-400"
-                />
+                >
+                  <option value="regular">New</option>
+                  <option value="regular">Regular</option>
+                  <option value="vip">VIP</option>
+                </select>
               </label>
             </div>
           </div>
@@ -346,12 +385,12 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Discount</span>
-                <span>-{money(Number(discount || 0))}%</span>
+                <span>-{money(Number(invoiceData.discount || 0))}%</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              {/* <div className="flex justify-between text-slate-400">
                 <span>special Discount</span>
-                <span>{money(Number(delivery || 0))}%</span>
-              </div>
+                <span>{money(Number(invoiceData.specialDiscount || 0))}%</span>
+              </div> */}
               <div className="mt-3 flex justify-between border-t border-slate-800 pt-3 text-lg font-black">
                 <span>Grand Total</span>
                 <span className="text-pink-300">{money(grandTotal)}</span>
