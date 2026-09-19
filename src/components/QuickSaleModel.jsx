@@ -445,7 +445,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               </div>
             </div>
             <button
-              onClick={handlePreview}
+              onClick={handlePrintAndSale}
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-pink-600 py-3.5 text-sm font-bold text-white hover:bg-pink-700"
             >
               <FaCheck size={17} /> Complete Sale
