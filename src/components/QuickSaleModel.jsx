@@ -250,7 +250,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                     <td className="pt-2">
                       {item.name}
                       <div className="text-[19px] mb-6">
-                        Model: {item.model}&nbsp; | &nbsp;Size: {invoiceData.size}
+                        Model: {item.model}&nbsp; | &nbsp;Size: {item.size}
                       </div>
                     </td>
                     <td className="pt-2 text-center">{item.qty || 1}</td>
