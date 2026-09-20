@@ -16,7 +16,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const [invoiceData, setInvoiceData] = useState({
     phone: "",
     discount: "",
-    size: "52",
+    specialDiscount: "",
     method: "Cash",
     invoiceNo: "INV-001",
     customerType: "New",
@@ -39,8 +39,8 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
   const grandTotal = Math.max(
     0,
     totals.subtotal -
-      (totals.subtotal * Number(invoiceData.discount || 0)) / 100 +
-      Number(invoiceData.delivery || 0),
+      (totals.subtotal * Number(invoiceData.discount || 0)) / 100 -
+      Number(invoiceData.specialDiscount || 0),
   );
   // ✅ CORRECT
   const methods = [
@@ -271,6 +271,14 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 <span>Discount</span>
                 <span className="font-extrabold">{money(discountAmount)}</span>
               </div>
+              {
+                invoiceData.specialDiscount && (
+                  <div className="flex mb-4 justify-between">
+                    <span>Special Discount</span>
+                    <span className="font-extrabold">{money(invoiceData.specialDiscount)}</span>
+                  </div>
+                )
+              }
               <div className="mt-2 flex mb-6 justify-between border-t-4 border-dashed border-black pt-2 text-[30px] font-black">
                 <span>Total (৳)</span>
                 <span>{money(grandTotal)}</span>
@@ -395,17 +403,14 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               </label>
               {/* Select Size  */}
               <label className="text-xs font-bold text-slate-500">
-                Select Size
-                <select
-                  value={invoiceData.size}
+                Specal Discount
+                <input
+                  value={invoiceData.specialDiscount}
                   onChange={handleChange}
-                  name="size"
+                  name="specialDiscount"
                   className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-pink-400"
                 >
-                  <option value="52">52</option>
-                  <option value="54">54</option>
-                  <option value="56">56</option>
-                </select>
+                </input>
               </label>
             </div>
           </div>
