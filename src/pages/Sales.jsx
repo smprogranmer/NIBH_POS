@@ -294,6 +294,38 @@ const initialProducts = [
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
+ {
+    id: 30,
+    name: "one part vorka",
+    model: "2992",
+    price: 3000,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [52],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+  {
+    id: 31,
+    name: "one part borka",
+    model: "2993",
+    price: 2800,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [52],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+ {
+    id: 1,
+    name: "inner cap",
+    model: "2980",
+    price: 200,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+  {
+   
 ];
 
 const Sales = ({ setCompletedSale }) => {
