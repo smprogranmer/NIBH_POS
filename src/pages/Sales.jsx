@@ -315,16 +315,37 @@ const initialProducts = [
     tag: "Best seller",
   },
  {
-    id: 1,
-    name: "inner cap",
-    model: "2980",
-    price: 200,
+    id: 32,
+    name: "abaya",
+    model: "8446",
+    price: 4500,
     stock: { 52: 2, 54: 3, 56: 4 },
-    
+    sizes: [52],
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
-  {
+{
+    id: 33,
+    name: "abaya",
+    model: "8446",
+    price: 4500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [54],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+{
+    id: 34,
+    name: "abaya",
+    model: "8446",
+    price: 4500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [56],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+ 
+  
    
 ];
 
