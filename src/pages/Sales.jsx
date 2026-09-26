@@ -344,9 +344,36 @@ const initialProducts = [
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
- 
-  
-   
+{
+    id: 35,
+    name: "abaya",
+    model: "8489",
+    price: 2500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [52],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+{
+    id: 36,
+    name: "abaya",
+    model: "8489",
+    price: 2500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [54],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+{
+    id: 34,
+    name: "abaya",
+    model: "8489",
+    price: 2500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [56],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
 ];
 
 const Sales = ({ setCompletedSale }) => {
