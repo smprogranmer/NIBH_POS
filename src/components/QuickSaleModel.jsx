@@ -183,7 +183,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
                 />
               </div>
               <h1 className=" text-[45px] font-black leading-none tracking-[-0.04em]">
-                Exclusive Borka House
+                New Irani Borka House
               </h1>
               <div className="mt-3 flex items-center justify-center gap-3 font-serif text-[20px] font-bold italic">
                 <span className="h-0.5 w-12 bg-black mt-[1.5rem]" />
