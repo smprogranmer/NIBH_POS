@@ -7,9 +7,9 @@ import QuickSaleModel from "../components/QuickSaleModel";
 const initialProducts = [
   {
     id: 1,
-    name: "Luxury Two Part Borka",
-    model: "2991",
-    price: 4500,
+    name: "one part ",
+    model: "2992",
+    price: 2000,
     stock: { 52: 2, 54: 3, 56: 4 },
     sizes: [52],
     tone: "from-rose-100 to-pink-50",
