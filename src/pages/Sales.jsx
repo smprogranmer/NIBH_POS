@@ -384,6 +384,17 @@ const initialProducts = [
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
+{
+    id: 36,
+    name: "premium one part borka",
+    model: "1204",
+    price: 4000,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [54],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
+
 ];
 
 const Sales = ({ setCompletedSale }) => {
