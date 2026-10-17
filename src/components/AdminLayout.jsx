@@ -7,7 +7,7 @@ import { Outlet } from 'react-router'
 
 const AdminLayout = () => {
 
-    const [NavberOpen, setNavberOpen] = useState(true)
+    const [NavberOpen, setNavberOpen] = useState(false)
 
     return (
         <div className="flex h-screen overflow-hidden bg-background">
