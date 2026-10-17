@@ -394,6 +394,16 @@ const initialProducts = [
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
+{
+    id: 37,
+    name: "premium one part borka",
+    model: "3504",
+    price: 2500,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [54],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
 
 ];
 
