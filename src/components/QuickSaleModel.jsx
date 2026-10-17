@@ -42,6 +42,7 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
       (totals.subtotal * Number(invoiceData.discount || 0)) / 100 -
       Number(invoiceData.specialDiscount || 0),
   );
+  
   // ✅ CORRECT
   const methods = [
     ["Cash", LuWallet],
@@ -164,6 +165,8 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
     }
   };
 
+  const totalWithDiscount = Number(discountAmount) + Number(invoiceData.specialDiscount);
+
   return (
     <>
       {/* --- Hidden Receipt Component --- */}
@@ -269,16 +272,16 @@ const QuickSaleModel = ({ cart, totals, onClose, onComplete }) => {
               </div>
               <div className="flex mb-4 justify-between">
                 <span>Discount</span>
-                <span className="font-extrabold">{money(discountAmount)}</span>
+                <span className="font-extrabold">{money(totalWithDiscount)}</span>
               </div>
-              {
+              {/* {
                 invoiceData.specialDiscount && (
                   <div className="flex mb-4 justify-between">
                     <span>Special Discount</span>
                     <span className="font-extrabold">{money(invoiceData.specialDiscount)}</span>
                   </div>
                 )
-              }
+              } */}
               <div className="mt-2 flex mb-6 justify-between border-t-4 border-dashed border-black pt-2 text-[30px] font-black">
                 <span>Total (৳)</span>
                 <span>{money(grandTotal)}</span>
