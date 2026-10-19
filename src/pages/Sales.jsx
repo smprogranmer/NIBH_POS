@@ -420,7 +420,7 @@ const initialProducts = [
     model: "3506",
     price: 800,
     stock: { 52: 2, 54: 3, 56: 4 },
-    sizes: [lg],
+    sizes: ["lg"],
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
