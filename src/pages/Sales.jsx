@@ -414,6 +414,16 @@ const initialProducts = [
     tone: "from-rose-100 to-pink-50",
     tag: "Best seller",
   },
+{
+    id: 39,
+    name: "fixed hijab",
+    model: "3506",
+    price: 800,
+    stock: { 52: 2, 54: 3, 56: 4 },
+    sizes: [lg],
+    tone: "from-rose-100 to-pink-50",
+    tag: "Best seller",
+  },
 
 
 ];
